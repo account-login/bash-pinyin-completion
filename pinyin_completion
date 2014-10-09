@@ -43,10 +43,10 @@ _py_completion()
 
     local dname_real bname_real dname bname tmp tmp2 sep
     local -a rt
-#目录名部分
-    dname="$(dirname "$cur")";
+#目录名部分 # 用 -- 防止 $cur 以 - 开头
+    dname="$(dirname -- "$cur")";
 #文件名部分
-    bname="$(basename "$cur")";
+    bname="$(basename -- "$cur")";
 
 #cd "./
     if [[ "${dname:0:1}" == "\"" ]]; then
@@ -58,8 +58,13 @@ _py_completion()
     fi
 
     #eval 用于消除转义符 例如 \[ 将变成 [ 
-    eval dname_real="$dname"
-    eval bname_real="$bname"
+    # 有空格时, ~开头的路径会挂。
+    #eval dname_real="$dname"
+    #eval bname_real="$bname"
+
+    # 所以用 dequote() { eval printf %s "%1" 2>/dev/null; } 
+    dname_real="$(dequote "$dname")"
+    bname_real="$(dequote "$bname")"
 
     test -z "$bname_real" && return 0;
 
@@ -74,13 +79,13 @@ _py_completion()
 
     if [[ "$1" == "-d" ]];then
         rt=(${rt[@]-} $(
-        find . -maxdepth 1 -type d -print|cut -b 3-|pinyinmatch -f -c "$bname_real"|grep -v "^0"|cut -c 3-|while read -r tmp;do 
+        find . -maxdepth 1 -type d -print 2>/dev/null |cut -b 3-|pinyinmatch -f -c -- "$bname_real"|grep -v "^0"|cut -c 3-|while read -r tmp;do 
         printf '%s%s%s\n' "$dname_real" "$sep" "$tmp"
         done
         ))
     else
         rt=(${rt[@]-} $(
-        find . -maxdepth 1 -print|cut -b 3-|pinyinmatch -f -c "$bname_real"|grep -v "^0"|cut -c 3-|while read -r tmp;do
+        find . -maxdepth 1 -print 2>/dev/null |cut -b 3-|pinyinmatch -f -c -- "$bname_real"|grep -v "^0"|cut -c 3-|while read -r tmp;do
         printf '%s%s%s\n' "$dname_real" "$sep" "$tmp"
         done
         ))
@@ -92,7 +97,10 @@ _py_completion()
     COMPREPLY=( "${COMPREPLY[@]}" "${rt[@]}" )
 }
 
-_py_save_function _filedir _py_bak_filedir
+# 允许重复 source 本文件
+if [ -z "$(declare -f _py_bak_filedir)" ]; then
+    _py_save_function _filedir _py_bak_filedir
+fi
 
 _filedir()
 {
@@ -100,7 +108,9 @@ _filedir()
     _py_completion $@ 
 }
 
-_py_save_function _filedir_xspec _py_bak_filedir_xspec
+if [ -z "$(declare -f _py_bak_filedir_xspec)" ]; then
+    _py_save_function _filedir_xspec _py_bak_filedir_xspec
+fi
 
 _filedir_xspec ()
 {

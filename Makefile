@@ -6,14 +6,14 @@ PLATFORM=$(shell uname)
 ifeq ($(PLATFORM),Darwin)
 	CFLAGS=-isysroot $(XCODE_SDK)
 else
-	CFLAGS=
+	CFLAGS=-O2
 endif
 all:pinyinmatch
 
 build:pinyinmatch
 
 pinyinmatch:pinyinmatch.o pinyin.o utf8vector.o linereader.o
-	gcc -Wall $(CFLAGS) -std=c99 pinyinmatch.o pinyin.o utf8vector.o linereader.o -o pinyinmatch
+	gcc -Wall $(CFLAGS) -std=c99 pinyinmatch.o pinyin.o utf8vector.o linereader.o -o pinyinmatch -s
 
 %.o:%.c
 	gcc -Wall $(CFLAGS) -std=c99 -c $< -o ./$@

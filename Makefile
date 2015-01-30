@@ -22,11 +22,11 @@ pinyinmatch:${OBJS}
 	gcc -Wall $(CFLAGS) -std=c99 -c $^ -o $@
 
 install:	
-	@if [ "`uname`" = "Darwin" ];then \
+	@if [ "`uname`" = "Darwin" ]; then \
 		test ! -e "/opt/local/etc/bash_completion.d" && echo 需要安装bash-completion && exit 1; \
 		cp pinyinmatch /usr/local/bin ;\
 		cp pinyin_completion /opt/local/etc/bash_completion.d/ ;\
-	elif [ "`uname`" = "Linux" ];then \
+	elif [[ "`uname`" = "Linux" || "`uname`" = CYGWIN* ]]; then \
 		install -d $(LINUX_BASHCD) ;\
 		echo install -d $(LINUX_BASHCD) ;\
 		install -d $(LINUX_BIN) ;\
@@ -38,10 +38,10 @@ install:
 	fi
 
 uninstall:	
-	@if [ "`uname`" = "Darwin" ];then \
+	@if [ "`uname`" = "Darwin" ]; then \
 		rm -fr /usr/local/bin/pinyinmatch  ;\
 		rm -fr /opt/local/etc/bash_completion.d/pinyin_completion ;\
-	elif [ "`uname`" = "Linux" ];then \
+	elif [[ "`uname`" = "Linux" || "`uname`" = CYGWIN* ]]; then \
 		rm -fr $(LINUX_BASHCD)/pinyin_completion  ;\
 		echo rm -fr  $(LINUX_BASHCD)/pinyin_completion  ;\
 		rm -fr $(LINUX_BIN)/pinyinmatch  ;\

@@ -26,7 +26,7 @@ install:
 		test ! -e "/opt/local/etc/bash_completion.d" && echo 需要安装bash-completion && exit 1; \
 		cp pinyinmatch /usr/local/bin ;\
 		cp pinyin_completion /opt/local/etc/bash_completion.d/ ;\
-	elif [[ "`uname`" = "Linux" || "`uname`" = CYGWIN* ]]; then \
+	elif [ "`uname`" = "Linux" -o "`uname -o`" = "Cygwin" ]; then \
 		install -d $(LINUX_BASHCD) ;\
 		echo install -d $(LINUX_BASHCD) ;\
 		install -d $(LINUX_BIN) ;\
@@ -41,7 +41,7 @@ uninstall:
 	@if [ "`uname`" = "Darwin" ]; then \
 		rm -fr /usr/local/bin/pinyinmatch  ;\
 		rm -fr /opt/local/etc/bash_completion.d/pinyin_completion ;\
-	elif [[ "`uname`" = "Linux" || "`uname`" = CYGWIN* ]]; then \
+	elif [ "`uname`" = "Linux" -o "`uname -o`" = "Cygwin" ]; then \
 		rm -fr $(LINUX_BASHCD)/pinyin_completion  ;\
 		echo rm -fr  $(LINUX_BASHCD)/pinyin_completion  ;\
 		rm -fr $(LINUX_BIN)/pinyinmatch  ;\
